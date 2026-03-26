@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>הזמנת עוגיות</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to bottom, #ffe4e1, #fff);
+            text-align: center;
+            direction: rtl;
+            margin: 0;
+        }
+        .container { max-width: 400px; margin: auto; padding: 20px; }
+        .page { display: none; }
+        .active { display: block; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 20px; }
+        h2 { color: #ff6b6b; }
+        input, select { width: 90%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; }
+        button { background: #ff6b6b; color: white; border: none; padding: 12px 25px; border-radius: 20px; font-size: 16px; margin-top: 15px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ff4d4d; }
+        .item { text-align: right; margin-top: 15px; }
+        .price { color: #888; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- PAGE 1 -->
+    <div id="page1" class="page active">
+        <div class="card">
+            <h2>🍪 פרטי לקוח</h2>
+            <input id="name" placeholder="שם">
+            <input id="phone" placeholder="מספר טלפון">
+            <input id="address" placeholder="כתובת">
+            <input id="allergies" placeholder="אלרגיות">
+            <button onclick="nextPage(2)">הבא</button>
+        </div>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div id="page2" class="page">
+        <div class="card">
+            <h2>🧁 הזמנה</h2>
+
+            <div class="item">
+                <label>בחר סוג עוגיות</label>
+                <select id="cookie">
+                    <option>שוקולד צ׳יפס - ₪30</option>
+                    <option>אוראו - ₪30</option>
+                    <option>בראוניז פאדג׳ - ₪30</option>
+                    <option>בראוניז דובאי - ₪30</option>
+                    <option>ביסקוף - ₪30</option>
+                    <option>קינמון - ₪30</option>
+                </select>
+                <div class="price">12 עוגיות בקופסה</div>
+            </div>
+            <input id="boxes" type="number" placeholder="כמה קופסאות עוגיות?">
+
+            <div class="item">
+                <b>קייק פופס</b>
+                <div class="price">10 בקופסה - ₪30</div>
+            </div>
+            <input id="cakepops" type="number" placeholder="כמה קופסאות?">
+
+            <div class="item">
+                <b>קוביות עוגת שוקולד</b>
+                <div class="price">8 בקופסה - ₪30</div>
+            </div>
+            <input id="cubes" type="number" placeholder="כמה קופסאות?">
+
+            <button onclick="nextPage(3)">הבא</button>
+        </div>
+    </div>
+
+    <!-- PAGE 3 -->
+    <div id="page3" class="page">
+        <div class="card">
+            <h2>💳 תשלום</h2>
+            <select id="payment">
+                <option value="">בחר אמצעי תשלום</option>
+                <option>פייבוקס</option>
+                <option>ביט</option>
+                <option>מזומן</option>
+            </select>
+            <p>📍 איסוף: רחוב תמר 2, שעלבים, משפחת לסין<br>ימי שישי</p>
+
+            <button onclick="placeOrder()">בצע הזמנה</button>
+            <button id="addOrderBtn" onclick="addAnotherOrder()" style="display:none;">➕ הוסף הזמנה נוספת</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function nextPage(page) {
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.getElementById("page" + page).classList.add("active");
+    }
+
+    function placeOrder() {
+        let name = document.getElementById("name").value.trim();
+        let phone = document.getElementById("phone").value.trim();
+        let address = document.getElementById("address").value.trim();
+        let allergies = document.getElementById("allergies").value.trim();
+
+        if (!name || !phone || !address) {
+            alert("אנא מלא/י את כל פרטי הלקוח (שם, טלפון, כתובת) 😊");
+            return;
+        }
+
+        let cookie = document.getElementById("cookie").value;
+        let boxes = parseInt(document.getElementById("boxes").value) || 0;
+        let cakepops = parseInt(document.getElementById("cakepops").value) || 0;
+        let cubes = parseInt(document.getElementById("cubes").value) || 0;
+        let payment = document.getElementById("payment").value;
+
+        if (!payment) {
+            alert("אנא בחר/י אמצעי תשלום");
+            return;
+        }
+
+        let orderDetails = "";
+        if (boxes > 0) orderDetails += `סוג עוגיות: ${cookie}\nקופסאות עוגיות: ${boxes}\n`;
+        if (cakepops > 0) orderDetails += `קייק פופס: ${cakepops}\n`;
+        if (cubes > 0) orderDetails += `קוביות עוגה: ${cubes}\n`;
+
+        if (orderDetails === "") {
+            alert("אנא הזמינו לפחות מוצר אחד 😊");
+            return;
+        }
+
+        let message =
+            `הזמנה חדשה 🍪
+
+שם: ${name}
+טלפון: ${phone}
+כתובת: ${address}
+אלרגיות: ${allergies}
+
+הזמנה:
+${orderDetails}
+תשלום: ${payment}
+
+איסוף: יום שישי - רחוב תמר 2, שעלבים, משפחת לסין`;
+
+        let url = "https://wa.me/972543054140?text=" + encodeURIComponent(message);
+        window.open(url, "_blank");
+
+        alert("תקבלי שיחה כשההזמנה מוכנה 💕");
+
+        document.getElementById("addOrderBtn").style.display = "inline-block";
+        document.querySelector("#page3 button").disabled = true;
+    }
+
+    function addAnotherOrder() {
+        document.getElementById("boxes").value = "";
+        document.getElementById("cakepops").value = "";
+        document.getElementById("cubes").value = "";
+        document.getElementById("cookie").selectedIndex = 0;
+        document.getElementById("payment").selectedIndex = 0;
+
+        document.getElementById("addOrderBtn").style.display = "none";
+        document.querySelector("#page3 button").disabled = false;
+
+        nextPage(2);
+    }
+</script>
+
+</body>
+</html>
